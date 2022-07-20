@@ -143,8 +143,8 @@ class Train:
 
         transform_inv = transforms.Compose([ToNumpy(), Denormalize(mean=0.5, std=0.5)])
 
-        dataset_train = Dataset(dir_data_train, data_type=self.data_type, transform=transform_train, sgm=25, ratio=0.9, size_data=size_data, size_window=size_window)
-        dataset_val = Dataset(dir_data_val, data_type=self.data_type, transform=transform_val, sgm=25, ratio=0.9, size_data=size_data, size_window=size_window)
+        dataset_train = Dataset(dir_data_train, data_type=self.data_type, transform=None, sgm=25, ratio=0.9, size_data=size_data, size_window=size_window)
+        dataset_val = Dataset(dir_data_val, data_type=self.data_type, transform=None, sgm=25, ratio=0.9, size_data=size_data, size_window=size_window)
 
         loader_train = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True, num_workers=8)
         loader_val = torch.utils.data.DataLoader(dataset_val, batch_size=batch_size, shuffle=True, num_workers=8)

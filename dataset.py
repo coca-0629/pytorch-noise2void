@@ -62,8 +62,8 @@ class Dataset(torch.utils.data.Dataset):
         #
         # data = {'input': input, 'label': label}
 
-        data = plt.imread(os.path.join(self.data_dir, self.lst_data[index]))
-
+        #data = plt.imread(os.path.join(self.data_dir, self.lst_data[index]))
+        data = np.fromfile(os.path.join(self.data_dir, self.lst_data[index]), dtype=np.float32).reshape([self.size_data[0], self.size_data[1], self.size_data[2]]).astype(np.float32)
         if data.dtype == np.uint8:
             data = data / 255.0
 
@@ -75,7 +75,10 @@ class Dataset(torch.utils.data.Dataset):
 
         label = data + self.noise[index]
         input, mask = self.generate_mask(copy.deepcopy(label))
-
+        
+        input = input.transpose((2, 0, 1)).astype(np.float32)
+        label = label.transpose((2, 0, 1)).astype(np.float32)
+        mask = mask.transpose((2, 0, 1)).astype(np.float32)
         data = {'label': label, 'input': input, 'mask': mask}
 
         if self.transform:
