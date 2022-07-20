@@ -5,6 +5,7 @@ from skimage import transform
 import matplotlib.pyplot as plt
 import os
 import copy
+import pdb
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -14,7 +15,7 @@ class Dataset(torch.utils.data.Dataset):
        stuff<number>_density.pt
     """
 
-    def __init__(self, data_dir, data_type='float32', transform=None, sgm=25, ratio=0.9, size_data=(256, 256, 3), size_window=(5, 5)):
+    def __init__(self, data_dir, data_type='float32', transform=None, sgm=25, ratio=0.9, size_data=(664, 654, 1), size_window=(5, 5)):
         self.data_dir = data_dir
         self.transform = transform
         self.data_type = data_type
@@ -39,7 +40,8 @@ class Dataset(torch.utils.data.Dataset):
         # lst_data.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
 
         self.lst_data = lst_data
-        self.noise = self.sgm / 255.0 * np.random.randn(len(self.lst_data), self.size_data[0], self.size_data[1], self.size_data[2])
+        #pdb.set_trace()
+        #self.noise = self.sgm / 255.0 * np.random.randn(len(self.lst_data), self.size_data[0], self.size_data[1], self.size_data[2])
 
     def __getitem__(self, index):
         # label = np.load(os.path.join(self.data_dir, self.lst_label[index]))
@@ -63,22 +65,24 @@ class Dataset(torch.utils.data.Dataset):
         # data = {'input': input, 'label': label}
 
         #data = plt.imread(os.path.join(self.data_dir, self.lst_data[index]))
-        data = np.fromfile(os.path.join(self.data_dir, self.lst_data[index]), dtype=np.float32).reshape([self.size_data[0], self.size_data[1], self.size_data[2]]).astype(np.float32)
-        if data.dtype == np.uint8:
-            data = data / 255.0
-
-        if data.ndim == 2:
-            data = np.expand_dims(data, axis=2)
-
-        if data.shape[0] > data.shape[1]:
-            data = data.transpose((1, 0, 2))
-
-        label = data + self.noise[index]
-        input, mask = self.generate_mask(copy.deepcopy(label))
+        data = np.fromfile(os.path.join(self.data_dir, self.lst_data[index]), dtype=np.float32).reshape([self.size_data[0], self.size_data[1], self.size_data[2]])
         
-        input = input.transpose((2, 0, 1)).astype(np.float32)
-        label = label.transpose((2, 0, 1)).astype(np.float32)
-        mask = mask.transpose((2, 0, 1)).astype(np.float32)
+        #print(np.mean(data))
+        #print(np.std(data))
+        
+        #if data.dtype == np.uint8:
+        #    data = data / 255.0
+
+        #if data.ndim == 2:
+        #    data = np.expand_dims(data, axis=2)
+
+        #if data.shape[0] > data.shape[1]:
+        #    data = data.transpose((1, 0, 2))
+        #noise = np.max(data)/255.0*self.sgm / 255.0 * np.random.randn(self.size_data[0], self.size_data[1], self.size_data[2])
+        #label = data + noise
+        label = data
+        input, mask = self.generate_mask(copy.deepcopy(label))
+
         data = {'label': label, 'input': input, 'mask': mask}
 
         if self.transform:
@@ -93,7 +97,8 @@ class Dataset(torch.utils.data.Dataset):
 
         ratio = self.ratio
         size_window = self.size_window
-        size_data = self.size_data
+        size_data=self.size_data
+        #pdb.set_trace()
         num_sample = int(size_data[0] * size_data[1] * (1 - ratio))
 
         mask = np.ones(size_data)
@@ -137,6 +142,11 @@ class ToTensor(object):
         input = input.transpose((2, 0, 1)).astype(np.float32)
         label = label.transpose((2, 0, 1)).astype(np.float32)
         mask = mask.transpose((2, 0, 1)).astype(np.float32)
+        
+        #input = input.astype(np.float32)
+        #label = label.astype(np.float32)
+        #mask = mask.astype(np.float32)
+        
         return {'input': torch.from_numpy(input), 'label': torch.from_numpy(label), 'mask': torch.from_numpy(mask)}
 
 

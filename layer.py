@@ -189,13 +189,13 @@ class Padding(nn.Module):
 
 
 class Pooling2d(nn.Module):
-    def __init__(self, nch=[], pool=2, type='avg'):
+    def __init__(self, nch=[], pool=2, type='avg', ceil=False):
         super().__init__()
 
         if type == 'avg':
-            self.pooling = nn.AvgPool2d(pool)
+            self.pooling = nn.AvgPool2d(pool, ceil_mode=ceil)
         elif type == 'max':
-            self.pooling = nn.MaxPool2d(pool)
+            self.pooling = nn.MaxPool2d(pool, ceil_mode=ceil)
         elif type == 'conv':
             self.pooling = nn.Conv2d(nch, nch, kernel_size=pool, stride=pool)
 
