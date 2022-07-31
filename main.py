@@ -37,7 +37,7 @@ parser.add_argument('--train_continue', default='on', choices=['on', 'off'], des
 parser.add_argument('--scope', default='denoising_Unet', dest='scope')
 parser.add_argument('--norm', type=str, default='bnorm', dest='norm')
 
-parser.add_argument('--name_data', type=str, default='bsd500', dest='name_data')
+parser.add_argument('--name_data', type=str, default='dentium', dest='name_data')
 
 parser.add_argument('--num_epoch', type=int,  default=300, dest='num_epoch')
 parser.add_argument('--batch_size', type=int, default=4, dest='batch_size')

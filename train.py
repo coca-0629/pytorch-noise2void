@@ -8,6 +8,7 @@ import torch.optim as optim
 from torchvision import transforms
 from torch.utils.tensorboard import SummaryWriter
 import matplotlib.pyplot as plt
+from TV_loss import *
 
 ##
 class Train:
@@ -174,6 +175,7 @@ class Train:
 
         ## setup loss & optimization
         fn_REG = nn.L1Loss().to(device)  # Regression loss: L1
+        tv_loss = TV_loss().to(device)
         # fn_REG = nn.MSELoss().to(device)     # Regression loss: L2
 
         paramsG = netG.parameters()
@@ -213,7 +215,7 @@ class Train:
                 # backward netG
                 optimG.zero_grad()
 
-                loss_G = fn_REG(output * (1 - mask), label * (1 - mask))
+                loss_G = fn_REG(output * (1 - mask), label * (1 - mask)) + tv_loss(output)
 
                 loss_G.backward()
                 optimG.step()
@@ -245,7 +247,7 @@ class Train:
                     # forward netG
                     output = netG(input)
 
-                    loss_G = fn_REG(output * (1 - mask), label * (1 - mask))
+                    loss_G = fn_REG(output * (1 - mask), label * (1 - mask)) + tv_loss(output)
 
                     loss_G_val += [loss_G.item()]
 
@@ -329,7 +331,7 @@ class Train:
         ## setup loss & optimization
         fn_REG = nn.L1Loss().to(device)  # L1
         # fn_REG = nn.MSELoss().to(device)  # L1
-
+        tv_loss = TV_loss().to(device)
         ## load from checkpoints
         st_epoch = 0
 
@@ -350,7 +352,7 @@ class Train:
 
                 output = netG(input)
 
-                loss_G = fn_REG(output * (1 - mask), label * (1 - mask))
+                loss_G = fn_REG(output * (1 - mask), label * (1 - mask)) + tv_loss(output)
 
                 loss_G_test += [loss_G.item()]
 
